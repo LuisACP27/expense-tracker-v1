@@ -1099,8 +1099,6 @@ body.night-mode {
     transform: scale(1.2);
     opacity: 1;
     z-index: 3;
-    background: rgba(var(--primary-color-rgb, 76, 175, 80), 0.1);
-    border: 2px solid var(--primary-color);
 }
 
 .category-picker-item.center .cat-icon {
