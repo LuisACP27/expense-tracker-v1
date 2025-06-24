@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Gestor de Gastos e Ingresos</title>
+    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#4CAF50" />
+    <link rel="apple-touch-icon" href="icon-192.png" />
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1>💰 Mi Gestor Financiero</h1>
+            <a href="settings.html" id="settings-btn" title="Ajustes" aria-label="Ajustes" class="settings-btn">⚙️</a>
+            <div class="balance-card">
+                <h2>Balance Total</h2>
+                <p class="balance" id="balance">$0.00</p>
+                <div class="balance-details">
+                    <div class="income-box">
+                        <span>Ingresos</span>
+                        <p id="total-income">$0.00</p>
+                    </div>
+                    <div class="expense-box">
+                        <span>Gastos</span>
+                        <p id="total-expense">$0.00</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="add">Agregar</button>
+            <button class="tab-btn" data-tab="list">Transacciones</button>
+            <button class="tab-btn" data-tab="stats">Estadísticas</button>
+        </div>
+
+        <!-- Tab Content -->
+        <div class="tab-content">
+            <!-- Add Transaction Tab -->
+            <div id="add-tab" class="tab-pane active">
+                <form id="transaction-form">
+                    <div class="form-group">
+                        <label>Tipo</label>
+                        <div class="type-selector">
+                            <input type="radio" id="income" name="type" value="income" checked />
+                            <label for="income" class="type-label income-label">Ingreso</label>
+                            <input type="radio" id="expense" name="type" value="expense" />
+                            <label for="expense" class="type-label expense-label">Gasto</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="amount">Cantidad</label>
+                        <input type="number" id="amount" step="0.01" required placeholder="0.00" />
+                    </div>
+
+                    <div class="form-group category-group">
+                        <label for="category">Categoría</label>
+                        <select id="category" required>
+                            <option value="">Selecciona una categoría</option>
+                            <!-- Categories will be dynamically inserted here -->
+                        </select>
+                        <button type="button" id="manage-categories-btn" class="btn btn-secondary small-btn" title="Gestionar Categorías">⚙️</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Descripción</label>
+                        <input type="text" id="description" placeholder="Descripción opcional" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="date">Fecha</label>
+                        <input type="date" id="date" required />
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Agregar Transacción</button>
+                </form>
+
+                <!-- Category Management Modal -->
+                <div id="category-modal" class="modal hidden">
+                    <div class="modal-content">
+                        <h3>Gestionar Categorías</h3>
+                        <div class="category-management">
+                            <div class="category-list">
+                                <h4>Ingresos</h4>
+                                <ul id="income-category-list" class="category-list-ul"></ul>
+                                <div class="add-category-form">
+                                    <input type="text" id="new-income-category-name" placeholder="Nueva categoría de ingreso" />
+                                    <input type="text" id="new-income-category-icon" placeholder="Icono (ej. 💰)" maxlength="2" />
+                                    <button id="add-income-category-btn" class="btn btn-secondary small-btn">Agregar</button>
+                                </div>
+                            </div>
+                            <div class="category-list">
+                                <h4>Gastos</h4>
+                                <ul id="expense-category-list" class="category-list-ul"></ul>
+                                <div class="add-category-form">
+                                    <input type="text" id="new-expense-category-name" placeholder="Nueva categoría de gasto" />
+                                    <input type="text" id="new-expense-category-icon" placeholder="Icono (ej. 🍔)" maxlength="2" />
+                                    <button id="add-expense-category-btn" class="btn btn-secondary small-btn">Agregar</button>
+                                </div>
+                            </div>
+                        </div>
+                        <button id="close-category-modal" class="btn btn-primary small-btn">Cerrar</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Custom Confirmation Modal -->
+            <div id="confirm-modal" class="modal hidden">
+                <div class="modal-content">
+                    <h3>Confirmar acción</h3>
+                    <p id="confirm-message">¿Estás seguro?</p>
+                    <div class="modal-buttons">
+                        <button id="confirm-yes" class="btn btn-primary">Aceptar</button>
+                        <button id="confirm-no" class="btn btn-secondary">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transactions List Tab -->
+            <div id="list-tab" class="tab-pane">
+                <div class="filter-section">
+                    <select id="filter-type">
+                        <option value="all">Todas</option>
+                        <option value="income">Solo Ingresos</option>
+                        <option value="expense">Solo Gastos</option>
+                    </select>
+                    <select id="filter-month">
+                        <option value="all">Todos los meses</option>
+                    </select>
+                </div>
+                <div id="transactions-list" class="transactions-list">
+                    <!-- Las transacciones se cargarán aquí dinámicamente -->
+                </div>
+            </div>
+
+            <!-- Statistics Tab -->
+            <div id="stats-tab" class="tab-pane">
+                <div class="stats-container">
+                    <div class="chart-container">
+                        <h3>Gastos por Categoría</h3>
+                        <canvas id="category-chart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Tendencia Mensual</h3>
+                        <canvas id="trend-chart"></canvas>
+                    </div>
+                    <div class="summary-section">
+                        <h3>Resumen del Mes Actual</h3>
+                        <div id="monthly-summary">
+                            <!-- El resumen se cargará aquí dinámicamente -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        // Registrar Service Worker para PWA
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('service-worker.js')
+                .then(reg => console.log('Service Worker registrado'))
+                .catch(err => console.log('Error al registrar Service Worker:', err));
+        }
+        // Aplicar tema y modo nocturno guardados
+        (function() {
+            const themes = {
+                green: {
+                    '--primary-color': '#4CAF50',
+                    '--secondary-color': '#2196F3',
+                    '--background-color': '#f5f5f5',
+                    '--card-background': '#ffffff',
+                    '--border-color': '#e0e0e0',
+                    '--income-color': '#4CAF50',
+                    '--expense-color': '#f44336'
+                },
+                blue: {
+                    '--primary-color': '#2196F3',
+                    '--secondary-color': '#4CAF50',
+                    '--background-color': '#e3f2fd',
+                    '--card-background': '#ffffff',
+                    '--border-color': '#90caf9',
+                    '--income-color': '#2196F3',
+                    '--expense-color': '#f44336'
+                },
+                red: {
+                    '--primary-color': '#e53935',
+                    '--secondary-color': '#ff7043',
+                    '--background-color': '#fff5f5',
+                    '--card-background': '#fff',
+                    '--border-color': '#ffcdd2',
+                    '--income-color': '#e53935',
+                    '--expense-color': '#b71c1c'
+                },
+                purple: {
+                    '--primary-color': '#8e24aa',
+                    '--secondary-color': '#7c43bd',
+                    '--background-color': '#f3e5f5',
+                    '--card-background': '#fff',
+                    '--border-color': '#ce93d8',
+                    '--income-color': '#8e24aa',
+                    '--expense-color': '#d500f9'
+                },
+                orange: {
+                    '--primary-color': '#fb8c00',
+                    '--secondary-color': '#ffb300',
+                    '--background-color': '#fff3e0',
+                    '--card-background': '#fff',
+                    '--border-color': '#ffe0b2',
+                    '--income-color': '#fb8c00',
+                    '--expense-color': '#e65100'
+                },
+                gray: {
+                    '--primary-color': '#757575',
+                    '--secondary-color': '#bdbdbd',
+                    '--background-color': '#f5f5f5',
+                    '--card-background': '#fff',
+                    '--border-color': '#e0e0e0',
+                    '--income-color': '#757575',
+                    '--expense-color': '#bdbdbd'
+                }
+            };
+            const savedTheme = localStorage.getItem('selected_theme') || 'green';
+            const night = localStorage.getItem('night_mode') === 'true';
+            const theme = themes[savedTheme];
+            if (theme) {
+                Object.entries(theme).forEach(([property, value]) => {
+                    document.documentElement.style.setProperty(property, value);
+                });
+            }
+            if (night) {
+                document.body.classList.add('night-mode');
+                document.documentElement.style.setProperty('--text-primary', '#fff');
+                document.documentElement.style.setProperty('--text-secondary', '#e0e0e0');
+            } else {
+                document.body.classList.remove('night-mode');
+                document.documentElement.style.setProperty('--text-primary', '#212121');
+                document.documentElement.style.setProperty('--text-secondary', '#666666');
+            }
+        })();
+    </script>
+</body>
+</html>

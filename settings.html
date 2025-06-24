@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ajustes - Mi Gestor Financiero</title>
+    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#4CAF50" />
+    <link rel="apple-touch-icon" href="icon-192.png" />
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <a href="index.html" class="back-btn" title="Volver">←</a>
+            <h1>⚙️ Ajustes</h1>
+        </header>
+
+        <!-- Content -->
+        <div class="tab-content">
+            <div class="settings-page">
+                <h2>Configuración de la Aplicación</h2>
+                
+                <div class="settings-content">
+                    <div class="settings-section">
+                        <h3>Apariencia</h3>
+                        <div class="form-group">
+                            <label for="theme-select">Selecciona un tema:</label>
+                            <select id="theme-select">
+                                <option value="green" selected>Verde</option>
+                                <option value="blue">Azul</option>
+                                <option value="red">Rojo</option>
+                                <option value="purple">Morado</option>
+                                <option value="orange">Naranja</option>
+                                <option value="gray">Gris</option>
+                            </select>
+                        </div>
+                        <div class="form-group night-mode-group">
+                            <label class="switch">
+                                <input type="checkbox" id="night-mode-toggle">
+                                <span class="slider round"></span>
+                            </label>
+                            <span class="night-mode-label">Modo nocturno</span>
+                        </div>
+                    </div>
+
+                    <div class="settings-section">
+                        <h3>Información de la Aplicación</h3>
+                        <div class="app-info">
+                            <p><strong>Nombre:</strong> Mi Gestor Financiero</p>
+                            <p><strong>Versión:</strong> 1.0.0</p>
+                            <p><strong>Tecnologías:</strong> HTML5, CSS3, JavaScript, PWA</p>
+                            <p><strong>Almacenamiento:</strong> Local (navegador)</p>
+                        </div>
+                    </div>
+
+                    <div class="settings-section">
+                        <h3>Características</h3>
+                        <div class="feature-list">
+                            <ul>
+                                <li>📱 Aplicación móvil instalable (PWA)</li>
+                                <li>💾 Funciona sin conexión a internet</li>
+                                <li>📊 Gráficos y estadísticas detalladas</li>
+                                <li>🏷️ Categorías personalizables</li>
+                                <li>🎨 Temas personalizables</li>
+                                <li>📅 Filtros por fecha y tipo</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="settings-section">
+                        <h3>Acciones</h3>
+                        <div class="settings-actions">
+                            <button id="export-data" class="btn btn-secondary">Exportar Datos</button>
+                            <button id="import-data" class="btn btn-secondary">Importar Datos</button>
+                            <button id="clear-data" class="btn btn-danger">Limpiar Todos los Datos</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/storage.js"></script>
+    <script src="js/settings.js"></script>
+    <script>
+        // Registrar Service Worker para PWA
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('service-worker.js')
+                .then(reg => console.log('Service Worker registrado'))
+                .catch(err => console.log('Error al registrar Service Worker:', err));
+        }
+    </script>
+</body>
+</html> 
