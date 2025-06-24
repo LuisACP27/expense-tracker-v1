@@ -760,8 +760,8 @@ class ExpenseTracker {
             const dist = Math.abs(centerY - itemCenter);
             
             // Usar classList.toggle para mejor rendimiento
-            const isCenter = dist < 60;
-            const isNear = dist < 120 && !isCenter;
+            const isCenter = dist < 50;
+            const isNear = dist < 90 && !isCenter;
             
             item.classList.toggle('center', isCenter);
             item.classList.toggle('near', isNear);
