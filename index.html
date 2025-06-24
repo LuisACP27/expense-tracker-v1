@@ -8,6 +8,12 @@
     <link rel="manifest" href="manifest.json" />
     <meta name="theme-color" content="#4CAF50" />
     <link rel="apple-touch-icon" href="icon-192.png" />
+    <script>
+      // Si no estamos en pin.html, redirigir siempre a pin.html
+      if (!window.location.pathname.endsWith('pin.html')) {
+        window.location.href = 'pin.html';
+      }
+    </script>
 </head>
 <body>
     <div class="container">
