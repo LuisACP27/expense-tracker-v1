@@ -1068,7 +1068,7 @@ body.night-mode {
     min-height: 80px;
     padding: 15px 20px;
     margin: 5px 0;
-    transition: all 0.1s ease-out;
+    transition: all 0.15s ease;
     cursor: pointer;
     user-select: none;
     border-radius: 12px;
@@ -1080,7 +1080,7 @@ body.night-mode {
 .category-picker-item .cat-icon {
     font-size: 32px;
     margin-bottom: 8px;
-    transition: all 0.1s ease-out;
+    transition: all 0.3s ease;
     line-height: 1;
 }
 
@@ -1089,54 +1089,55 @@ body.night-mode {
     color: var(--text-primary);
     font-weight: 500;
     text-align: center;
-    transition: all 0.1s ease-out;
+    transition: all 0.3s ease;
     line-height: 1.2;
     max-width: 100%;
     word-wrap: break-word;
 }
 
 .category-picker-item.center {
-    transform: scale(1.3);
+    transform: scale(1.2);
     opacity: 1;
     z-index: 3;
 }
 
 .category-picker-item.center .cat-icon {
-    font-size: 44px;
+    font-size: 40px;
 }
 
 .category-picker-item.center .cat-name {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 600;
     color: var(--primary-color);
 }
 
 .category-picker-item.near {
-    transform: scale(1.15);
-    opacity: 0.85;
+    transform: scale(1.1);
+    opacity: 0.8;
     z-index: 2;
+    background: rgba(var(--primary-color-rgb, 76, 175, 80), 0.05);
 }
 
 .category-picker-item.near .cat-icon {
-    font-size: 38px;
+    font-size: 36px;
 }
 
 .category-picker-item.near .cat-name {
-    font-size: 18px;
+    font-size: 17px;
 }
 
 .category-picker-item.far {
-    transform: scale(0.85);
-    opacity: 0.6;
+    transform: scale(0.9);
+    opacity: 0.5;
     z-index: 1;
 }
 
 .category-picker-item.far .cat-icon {
-    font-size: 26px;
+    font-size: 28px;
 }
 
 .category-picker-item.far .cat-name {
-    font-size: 13px;
+    font-size: 14px;
 }
 
 .category-picker-item:hover {
@@ -1145,7 +1146,6 @@ body.night-mode {
 
 .category-picker-item:active {
     transform: scale(0.95);
-    transition: transform 0.05s ease-out;
 }
 
 .category-picker-item.empty {
@@ -1242,11 +1242,11 @@ body.night-mode {
     }
     
     .category-picker-item.center .cat-icon {
-        font-size: 38px;
+        font-size: 36px;
     }
     
     .category-picker-item.center .cat-name {
-        font-size: 18px;
+        font-size: 16px;
     }
     
     .close-modal-btn {
