@@ -7,6 +7,7 @@ class ExpenseTracker {
         this.themes = {
             green: {
                 '--primary-color': '#4CAF50',
+                '--primary-color-rgb': '76, 175, 80',
                 '--secondary-color': '#53C5A8',
                 '--background-color': '#f5f5f5',
                 '--card-background': '#ffffff',
@@ -16,6 +17,7 @@ class ExpenseTracker {
             },
             blue: {
                 '--primary-color': '#2196F3',
+                '--primary-color-rgb': '33, 150, 243',
                 '--secondary-color': '#10d1c2',
                 '--background-color': '#e3f2fd',
                 '--card-background': '#ffffff',
@@ -25,6 +27,7 @@ class ExpenseTracker {
             },
             dark: {
                 '--primary-color': '#212121',
+                '--primary-color-rgb': '33, 33, 33',
                 '--secondary-color': '#424242',
                 '--background-color': '#121212',
                 '--card-background': '#1e1e1e',
@@ -34,6 +37,7 @@ class ExpenseTracker {
             },
             red: {
                 '--primary-color': '#e53935',
+                '--primary-color-rgb': '229, 57, 53',
                 '--secondary-color': '#ff7043',
                 '--background-color': '#fff5f5',
                 '--card-background': '#fff',
@@ -43,6 +47,7 @@ class ExpenseTracker {
             },
             purple: {
                 '--primary-color': '#8e24aa',
+                '--primary-color-rgb': '142, 36, 170',
                 '--secondary-color': '#d82ccd',
                 '--background-color': '#f3e5f5',
                 '--card-background': '#fff',
@@ -52,6 +57,7 @@ class ExpenseTracker {
             },
             orange: {
                 '--primary-color': '#fb8c00',
+                '--primary-color-rgb': '251, 140, 0',
                 '--secondary-color': '#ffb300',
                 '--background-color': '#fff3e0',
                 '--card-background': '#fff',
@@ -61,6 +67,7 @@ class ExpenseTracker {
             },
             gray: {
                 '--primary-color': '#757575',
+                '--primary-color-rgb': '117, 117, 117',
                 '--secondary-color': '#bdbdbd',
                 '--background-color': '#f5f5f5',
                 '--card-background': '#fff',
@@ -613,48 +620,114 @@ class ExpenseTracker {
         const data = storage.getData();
         const categories = data.categories[type];
         const pickerList = document.getElementById('category-picker-list');
+        
+        // Limpiar lista
         pickerList.innerHTML = '';
-        // Calcular cuántos elementos vacíos se necesitan para centrar
-        const paddingCount = 2; // Ajusta según el alto del picker y el item
+        
+        // Calcular altura del viewport y del item para centrado perfecto
+        const viewportHeight = window.innerHeight;
+        const itemHeight = 80; // Altura aproximada de cada item
+        const paddingCount = Math.floor(viewportHeight / (2 * itemHeight));
+        
+        // Agregar elementos de padding al inicio para centrado
         for (let i = 0; i < paddingCount; i++) {
             const emptyDiv = document.createElement('div');
             emptyDiv.className = 'category-picker-item empty';
+            emptyDiv.style.height = `${itemHeight}px`;
             emptyDiv.style.visibility = 'hidden';
             pickerList.appendChild(emptyDiv);
         }
+        
         // Renderizar categorías
         categories.forEach((cat, idx) => {
             const item = document.createElement('div');
             item.className = 'category-picker-item';
             item.dataset.index = idx;
-            item.innerHTML = `<span class="cat-icon">${cat.icon}</span><span class="cat-name">${cat.name}</span>`;
+            item.dataset.categoryId = cat.id;
+            item.innerHTML = `
+                <div class="cat-icon">${cat.icon}</div>
+                <div class="cat-name">${cat.name}</div>
+            `;
             pickerList.appendChild(item);
         });
+        
+        // Agregar elementos de padding al final para centrado
         for (let i = 0; i < paddingCount; i++) {
             const emptyDiv = document.createElement('div');
             emptyDiv.className = 'category-picker-item empty';
+            emptyDiv.style.height = `${itemHeight}px`;
             emptyDiv.style.visibility = 'hidden';
             pickerList.appendChild(emptyDiv);
         }
-        this.updatePickerVisual();
+        
+        // Mostrar modal
         document.getElementById('category-picker-modal').classList.remove('hidden');
-        // Scroll al seleccionado actual o al centro
+        
+        // Scroll al elemento seleccionado actual o al centro
         setTimeout(() => {
             const select = document.getElementById('category');
-            const selectedIdx = Array.from(select.options).findIndex(opt => opt.selected && opt.value);
-            const centerIdx = selectedIdx > 0 ? selectedIdx - 1 : Math.floor(categories.length / 2);
-            this.scrollToPickerIndex(centerIdx);
-        }, 10);
-        // Eventos de scroll/touch
-        pickerList.onscroll = () => this.updatePickerVisual();
-        pickerList.onwheel = () => this.updatePickerVisual();
-        pickerList.ontouchmove = () => this.updatePickerVisual();
+            const selectedValue = select.value;
+            let targetIndex = Math.floor(categories.length / 2); // Por defecto al centro
+            
+            if (selectedValue) {
+                const selectedCategoryIndex = categories.findIndex(cat => cat.id === selectedValue);
+                if (selectedCategoryIndex !== -1) {
+                    targetIndex = selectedCategoryIndex;
+                }
+            }
+            
+            this.scrollToPickerIndex(targetIndex);
+        }, 50);
+        
+        // Configurar eventos de scroll
+        this.setupCategoryPickerScroll();
+        
+        // Click en categoría
         pickerList.onclick = (e) => {
             const item = e.target.closest('.category-picker-item');
             if (item && !item.classList.contains('empty')) {
-                this.selectCategoryFromPicker(parseInt(item.dataset.index));
+                const index = parseInt(item.dataset.index);
+                this.selectCategoryFromPicker(index);
             }
         };
+        
+        // Teclado para navegación
+        pickerList.tabIndex = 0;
+        pickerList.onkeydown = (e) => {
+            const currentIndex = this.getCurrentSelectedIndex();
+            let newIndex = currentIndex;
+            
+            switch(e.key) {
+                case 'ArrowUp':
+                    e.preventDefault();
+                    newIndex = Math.max(0, currentIndex - 1);
+                    break;
+                case 'ArrowDown':
+                    e.preventDefault();
+                    newIndex = Math.min(categories.length - 1, currentIndex + 1);
+                    break;
+                case 'Enter':
+                case ' ':
+                    e.preventDefault();
+                    if (currentIndex >= 0) {
+                        this.selectCategoryFromPicker(currentIndex);
+                    }
+                    return;
+                case 'Escape':
+                    e.preventDefault();
+                    this.closeCategoryPicker();
+                    return;
+            }
+            
+            if (newIndex !== currentIndex) {
+                this.scrollToPickerIndex(newIndex);
+            }
+        };
+        
+        // Enfocar el picker para navegación por teclado
+        setTimeout(() => {
+            pickerList.focus();
+        }, 100);
     }
 
     closeCategoryPicker() {
@@ -663,34 +736,88 @@ class ExpenseTracker {
 
     updatePickerVisual() {
         const pickerList = document.getElementById('category-picker-list');
-        const items = Array.from(pickerList.children);
+        const scrollIndicator = document.getElementById('scroll-indicator');
+        const items = Array.from(pickerList.children).filter(item => !item.classList.contains('empty'));
         const rect = pickerList.getBoundingClientRect();
         const centerY = rect.top + rect.height / 2;
+        
+        // Mostrar/ocultar indicador de scroll
+        if (scrollIndicator) {
+            const isAtTop = pickerList.scrollTop <= 0;
+            const isAtBottom = pickerList.scrollTop + pickerList.clientHeight >= pickerList.scrollHeight;
+            
+            if (isAtTop || isAtBottom) {
+                scrollIndicator.classList.remove('visible');
+            } else {
+                scrollIndicator.classList.add('visible');
+            }
+        }
+        
         items.forEach(item => {
             const itemRect = item.getBoundingClientRect();
             const itemCenter = itemRect.top + itemRect.height / 2;
             const dist = Math.abs(centerY - itemCenter);
-            if (dist < 30) {
-                item.className = 'category-picker-item center';
-            } else if (dist < 70) {
-                item.className = 'category-picker-item near';
+            
+            // Remover clases anteriores
+            item.classList.remove('center', 'near', 'far');
+            
+            if (dist < 40) {
+                item.classList.add('center');
+            } else if (dist < 80) {
+                item.classList.add('near');
             } else {
-                item.className = 'category-picker-item far';
+                item.classList.add('far');
             }
         });
     }
 
     scrollToPickerIndex(idx) {
         const pickerList = document.getElementById('category-picker-list');
-        const items = Array.from(pickerList.children);
+        const items = Array.from(pickerList.children).filter(item => !item.classList.contains('empty'));
+        
         if (items[idx]) {
             const item = items[idx];
             const listRect = pickerList.getBoundingClientRect();
             const itemRect = item.getBoundingClientRect();
-            const scroll = (itemRect.top + itemRect.height / 2) - (listRect.top + listRect.height / 2);
-            pickerList.scrollTop += scroll;
-            this.updatePickerVisual();
+            const itemHeight = itemRect.height;
+            
+            // Calcular la posición exacta para centrar el elemento
+            const targetScrollTop = item.offsetTop - (listRect.height / 2) + (itemHeight / 2);
+            
+            // Scroll suave al elemento
+            pickerList.scrollTo({
+                top: targetScrollTop,
+                behavior: 'smooth'
+            });
+            
+            // Actualizar visual después del scroll
+            setTimeout(() => {
+                this.updatePickerVisual();
+            }, 300);
         }
+    }
+
+    getCurrentSelectedIndex() {
+        const pickerList = document.getElementById('category-picker-list');
+        const items = Array.from(pickerList.children).filter(item => !item.classList.contains('empty'));
+        const rect = pickerList.getBoundingClientRect();
+        const centerY = rect.top + rect.height / 2;
+        
+        let closestIndex = -1;
+        let closestDistance = Infinity;
+        
+        items.forEach((item, index) => {
+            const itemRect = item.getBoundingClientRect();
+            const itemCenter = itemRect.top + itemRect.height / 2;
+            const dist = Math.abs(centerY - itemCenter);
+            
+            if (dist < closestDistance) {
+                closestDistance = dist;
+                closestIndex = index;
+            }
+        });
+        
+        return closestIndex;
     }
 
     selectCategoryFromPicker(idx) {
@@ -779,6 +906,40 @@ class ExpenseTracker {
             // Aplica el atributo data-theme al body para los estilos CSS específicos
             document.body.setAttribute('data-theme', savedTheme);
         }
+    }
+
+    setupCategoryPickerScroll() {
+        const pickerList = document.getElementById('category-picker-list');
+        let isScrolling = false;
+        let scrollTimeout;
+        
+        // Función para manejar el scroll con momentum
+        const handleScroll = () => {
+            if (!isScrolling) {
+                isScrolling = true;
+                pickerList.style.pointerEvents = 'none';
+            }
+            
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                isScrolling = false;
+                pickerList.style.pointerEvents = 'auto';
+                this.updatePickerVisual();
+            }, 150);
+        };
+        
+        // Eventos de scroll
+        pickerList.addEventListener('scroll', handleScroll, { passive: true });
+        pickerList.addEventListener('touchmove', handleScroll, { passive: true });
+        pickerList.addEventListener('wheel', handleScroll, { passive: true });
+        
+        // Snap al elemento más cercano al centro cuando termine el scroll
+        pickerList.addEventListener('scrollend', () => {
+            const currentIndex = this.getCurrentSelectedIndex();
+            if (currentIndex >= 0) {
+                this.scrollToPickerIndex(currentIndex);
+            }
+        });
     }
 }
 
