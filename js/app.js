@@ -614,6 +614,14 @@ class ExpenseTracker {
         const categories = data.categories[type];
         const pickerList = document.getElementById('category-picker-list');
         pickerList.innerHTML = '';
+        // Calcular cuántos elementos vacíos se necesitan para centrar
+        const paddingCount = 2; // Ajusta según el alto del picker y el item
+        for (let i = 0; i < paddingCount; i++) {
+            const emptyDiv = document.createElement('div');
+            emptyDiv.className = 'category-picker-item empty';
+            emptyDiv.style.visibility = 'hidden';
+            pickerList.appendChild(emptyDiv);
+        }
         // Renderizar categorías
         categories.forEach((cat, idx) => {
             const item = document.createElement('div');
@@ -622,6 +630,12 @@ class ExpenseTracker {
             item.innerHTML = `<span class="cat-icon">${cat.icon}</span><span class="cat-name">${cat.name}</span>`;
             pickerList.appendChild(item);
         });
+        for (let i = 0; i < paddingCount; i++) {
+            const emptyDiv = document.createElement('div');
+            emptyDiv.className = 'category-picker-item empty';
+            emptyDiv.style.visibility = 'hidden';
+            pickerList.appendChild(emptyDiv);
+        }
         this.updatePickerVisual();
         document.getElementById('category-picker-modal').classList.remove('hidden');
         // Scroll al seleccionado actual o al centro
@@ -637,7 +651,7 @@ class ExpenseTracker {
         pickerList.ontouchmove = () => this.updatePickerVisual();
         pickerList.onclick = (e) => {
             const item = e.target.closest('.category-picker-item');
-            if (item) {
+            if (item && !item.classList.contains('empty')) {
                 this.selectCategoryFromPicker(parseInt(item.dataset.index));
             }
         };
