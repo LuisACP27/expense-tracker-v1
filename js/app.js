@@ -753,19 +753,21 @@ class ExpenseTracker {
             }
         }
         
-        // Optimizar el cálculo de distancias
         items.forEach(item => {
             const itemRect = item.getBoundingClientRect();
             const itemCenter = itemRect.top + itemRect.height / 2;
             const dist = Math.abs(centerY - itemCenter);
             
-            // Usar classList.toggle para mejor rendimiento
-            const isCenter = dist < 50;
-            const isNear = dist < 90 && !isCenter;
+            // Remover clases anteriores
+            item.classList.remove('center', 'near', 'far');
             
-            item.classList.toggle('center', isCenter);
-            item.classList.toggle('near', isNear);
-            item.classList.toggle('far', !isCenter && !isNear);
+            if (dist < 40) {
+                item.classList.add('center');
+            } else if (dist < 80) {
+                item.classList.add('near');
+            } else {
+                item.classList.add('far');
+            }
         });
     }
 
@@ -911,22 +913,22 @@ class ExpenseTracker {
         let isScrolling = false;
         let scrollTimeout;
         
-        // Función para manejar el scroll con respuesta inmediata
+        // Función para manejar el scroll con momentum
         const handleScroll = () => {
-            // Actualizar visual inmediatamente
-            this.updatePickerVisual();
-            
             if (!isScrolling) {
                 isScrolling = true;
+                pickerList.style.pointerEvents = 'none';
             }
             
             clearTimeout(scrollTimeout);
             scrollTimeout = setTimeout(() => {
                 isScrolling = false;
-            }, 100);
+                pickerList.style.pointerEvents = 'auto';
+                this.updatePickerVisual();
+            }, 150);
         };
         
-        // Eventos de scroll con respuesta inmediata
+        // Eventos de scroll
         pickerList.addEventListener('scroll', handleScroll, { passive: true });
         pickerList.addEventListener('touchmove', handleScroll, { passive: true });
         pickerList.addEventListener('wheel', handleScroll, { passive: true });
