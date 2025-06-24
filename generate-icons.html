@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Generador de Iconos</title>
+</head>
+<body>
+    <h1>Generador de Iconos para PWA</h1>
+    <p>Haz clic derecho en cada icono y guárdalo con el nombre indicado:</p>
+    
+    <h2>icon-192.png (192x192)</h2>
+    <canvas id="icon192" width="192" height="192"></canvas>
+    
+    <h2>icon-512.png (512x512)</h2>
+    <canvas id="icon512" width="512" height="512"></canvas>
+
+    <script>
+        function drawIcon(canvasId, size) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            
+            // Fondo verde con bordes redondeados
+            ctx.fillStyle = '#4CAF50';
+            const radius = size * 0.1;
+            ctx.beginPath();
+            ctx.moveTo(radius, 0);
+            ctx.lineTo(size - radius, 0);
+            ctx.quadraticCurveTo(size, 0, size, radius);
+            ctx.lineTo(size, size - radius);
+            ctx.quadraticCurveTo(size, size, size - radius, size);
+            ctx.lineTo(radius, size);
+            ctx.quadraticCurveTo(0, size, 0, size - radius);
+            ctx.lineTo(0, radius);
+            ctx.quadraticCurveTo(0, 0, radius, 0);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Texto emoji
+            ctx.font = `${size * 0.4}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = 'white';
+            ctx.fillText('💰', size / 2, size / 2);
+        }
+        
+        drawIcon('icon192', 192);
+        drawIcon('icon512', 512);
+    </script>
+</body>
+</html>

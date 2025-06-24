@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PIN de Seguridad - Mi Gestor Financiero</title>
+    <link rel="stylesheet" href="css/styles.css" />
+    <style>
+        .pin-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--background-color, #f5f5f5);
+        }
+        .pin-card {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            padding: 2.5rem 2rem;
+            max-width: 350px;
+            width: 100%;
+            text-align: center;
+        }
+        .pin-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .pin-desc {
+            color: #666;
+            margin-bottom: 2rem;
+        }
+        .pin-input {
+            font-size: 2rem;
+            letter-spacing: 0.5rem;
+            padding: 0.5rem 1rem;
+            width: 8rem;
+            text-align: center;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        .pin-btn {
+            background: var(--primary-color, #4CAF50);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-bottom: 1rem;
+            width: 100%;
+        }
+        .pin-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .pin-error {
+            color: #e53935;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="pin-container">
+        <div class="pin-card" id="pin-card">
+            <!-- El contenido se genera por JS -->
+        </div>
+    </div>
+    <script>
+    const PIN_KEY = 'security_pin';
+    const pinCard = document.getElementById('pin-card');
+
+    function renderCreatePin() {
+        pinCard.innerHTML = `
+            <div class="pin-title">Crear PIN de seguridad</div>
+            <div class="pin-desc">Elige un PIN de 4 dígitos para proteger tu app</div>
+            <input type="password" maxlength="4" pattern="\\d{4}" class="pin-input" id="new-pin" autocomplete="off" inputmode="numeric" />
+            <br>
+            <button class="pin-btn" id="create-pin-btn">Crear PIN</button>
+            <div class="pin-error" id="pin-error" style="display:none;"></div>
+        `;
+        document.getElementById('create-pin-btn').onclick = function() {
+            const pin = document.getElementById('new-pin').value.trim();
+            if (!/^\d{4}$/.test(pin)) {
+                showError('El PIN debe tener exactamente 4 dígitos.');
+                return;
+            }
+            localStorage.setItem(PIN_KEY, pin);
+            window.location.href = 'index.html';
+        };
+    }
+
+    function renderEnterPin() {
+        pinCard.innerHTML = `
+            <div class="pin-title">Ingresa tu PIN de seguridad</div>
+            <div class="pin-desc">Introduce el PIN de 4 dígitos para acceder</div>
+            <input type="password" maxlength="4" pattern="\\d{4}" class="pin-input" id="enter-pin" autocomplete="off" inputmode="numeric" />
+            <br>
+            <button class="pin-btn" id="enter-pin-btn">Acceder</button>
+            <div class="pin-error" id="pin-error" style="display:none;"></div>
+        `;
+        document.getElementById('enter-pin-btn').onclick = function() {
+            const pin = document.getElementById('enter-pin').value.trim();
+            const savedPin = localStorage.getItem(PIN_KEY);
+            if (pin === savedPin) {
+                window.location.href = 'index.html';
+            } else {
+                showError('PIN incorrecto. Intenta de nuevo.');
+            }
+        };
+    }
+
+    function showError(msg) {
+        const err = document.getElementById('pin-error');
+        err.textContent = msg;
+        err.style.display = 'block';
+    }
+
+    // Lógica principal
+    if (!localStorage.getItem(PIN_KEY)) {
+        renderCreatePin();
+    } else {
+        renderEnterPin();
+    }
+    </script>
+</body>
+</html> 
