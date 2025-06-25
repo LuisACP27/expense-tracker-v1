@@ -77,6 +77,7 @@ class SettingsPage {
         this.loadTheme();
         this.loadNightMode();
         this.loadLanguage();
+        this.loadPinSettings();
         this.setupEventListeners();
     }
 
@@ -120,6 +121,15 @@ class SettingsPage {
         document.getElementById('change-pin-form').addEventListener('submit', (e) => {
             e.preventDefault();
             this.handleChangePinModal();
+        });
+
+        // Nuevas opciones de PIN
+        document.getElementById('pin-enabled-toggle').addEventListener('change', (e) => {
+            this.togglePinRequirement(e.target.checked);
+        });
+
+        document.getElementById('disable-pin').addEventListener('click', () => {
+            this.disablePin();
         });
     }
 
@@ -386,6 +396,56 @@ class SettingsPage {
         localStorage.setItem(PIN_KEY, newPin);
         document.getElementById('change-pin-modal').classList.add('hidden');
         this.showNotification('PIN cambiado correctamente.', 'success');
+    }
+
+    // Cargar configuración de PIN
+    loadPinSettings() {
+        const pinEnabled = localStorage.getItem('pin_enabled') !== 'false'; // Por defecto habilitado
+        const hasPin = localStorage.getItem('security_pin') !== null;
+        
+        const pinToggle = document.getElementById('pin-enabled-toggle');
+        const disablePinBtn = document.getElementById('disable-pin');
+        
+        // Configurar el toggle
+        pinToggle.checked = pinEnabled && hasPin;
+        
+        // Mostrar/ocultar botón de desactivar
+        disablePinBtn.style.display = hasPin ? 'block' : 'none';
+        
+        // Deshabilitar toggle si no hay PIN
+        pinToggle.disabled = !hasPin;
+    }
+
+    // Habilitar/deshabilitar requerimiento de PIN
+    togglePinRequirement(enabled) {
+        if (!enabled) {
+            // Deshabilitar PIN
+            localStorage.setItem('pin_enabled', 'false');
+            sessionStorage.setItem('pin_ok', '1'); // Permitir acceso inmediato
+            this.showNotification('PIN deshabilitado. Acceso directo habilitado.', 'success');
+        } else {
+            // Habilitar PIN
+            localStorage.setItem('pin_enabled', 'true');
+            sessionStorage.removeItem('pin_ok'); // Requerir PIN en siguiente acceso
+            this.showNotification('PIN habilitado. Se requerirá en el próximo acceso.', 'success');
+        }
+        
+        this.loadPinSettings(); // Actualizar UI
+    }
+
+    // Desactivar PIN completamente
+    disablePin() {
+        if (confirm('¿Estás seguro de que quieres desactivar el PIN? Esto eliminará el PIN actual y permitirá acceso directo a la aplicación.')) {
+            // Eliminar PIN
+            localStorage.removeItem('security_pin');
+            localStorage.setItem('pin_enabled', 'false');
+            sessionStorage.setItem('pin_ok', '1'); // Permitir acceso inmediato
+            
+            // Actualizar UI
+            this.loadPinSettings();
+            
+            this.showNotification('PIN desactivado. Acceso directo habilitado.', 'success');
+        }
     }
 }
 
