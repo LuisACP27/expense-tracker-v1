@@ -9,8 +9,8 @@
     <meta name="theme-color" content="#4CAF50" />
     <link rel="apple-touch-icon" href="icon-192.png" />
     <script>
-      // Si no estamos en pin.html, redirigir siempre a pin.html
-      if (!window.location.pathname.endsWith('pin.html')) {
+      // Si no estamos en pin.html y no se ha ingresado el PIN, redirigir a pin.html
+      if (!window.location.pathname.endsWith('pin.html') && sessionStorage.getItem('pin_ok') !== '1') {
         window.location.href = 'pin.html';
       }
     </script>

@@ -104,6 +104,7 @@
             const pin = document.getElementById('enter-pin').value.trim();
             const savedPin = localStorage.getItem(PIN_KEY);
             if (pin === savedPin) {
+                sessionStorage.setItem('pin_ok', '1');
                 window.location.href = 'index.html';
             } else {
                 showError('PIN incorrecto. Intenta de nuevo.');
