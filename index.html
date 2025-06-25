@@ -9,8 +9,12 @@
     <meta name="theme-color" content="#4CAF50" />
     <link rel="apple-touch-icon" href="icon-192.png" />
     <script>
-      // Si no estamos en pin.html y no se ha ingresado el PIN, redirigir a pin.html
-      if (!window.location.pathname.endsWith('pin.html') && sessionStorage.getItem('pin_ok') !== '1') {
+      // Verificar si el PIN está habilitado y si se ha ingresado correctamente
+      const pinEnabled = localStorage.getItem('pin_enabled') !== 'false'; // Por defecto habilitado
+      const pinOk = sessionStorage.getItem('pin_ok') === '1';
+      
+      // Solo redirigir a pin.html si el PIN está habilitado y no se ha ingresado
+      if (pinEnabled && !pinOk && !window.location.pathname.endsWith('pin.html')) {
         window.location.href = 'pin.html';
       }
     </script>
