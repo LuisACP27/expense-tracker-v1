@@ -98,7 +98,6 @@
             <input type="password" maxlength="4" pattern="\\d{4}" class="pin-input" id="enter-pin" autocomplete="off" inputmode="numeric" />
             <br>
             <button class="pin-btn" id="enter-pin-btn">Acceder</button>
-            <button class="pin-btn" id="forgot-pin-btn" style="background: #666; margin-top: 10px;">Olvidé mi PIN</button>
             <div class="pin-error" id="pin-error" style="display:none;"></div>
         `;
         document.getElementById('enter-pin-btn').onclick = function() {
@@ -109,13 +108,6 @@
                 window.location.href = 'index.html';
             } else {
                 showError('PIN incorrecto. Intenta de nuevo.');
-            }
-        };
-        document.getElementById('forgot-pin-btn').onclick = function() {
-            if (confirm('¿Estás seguro de que quieres crear un nuevo PIN? Esto eliminará el PIN actual.')) {
-                localStorage.removeItem(PIN_KEY);
-                sessionStorage.removeItem('pin_ok');
-                renderCreatePin();
             }
         };
     }
